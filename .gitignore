@@ -64,4 +64,4 @@ Thumbs.db
 # Removed *.jpg since we want to track these with Git LFS
 
 # Cache
-.cache/
+.cache/public/assets/imgs/*.jpg
