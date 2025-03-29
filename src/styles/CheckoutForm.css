@@ -1,0 +1,237 @@
+.checkout-steps-indicator {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.step-indicator {
+  flex: 1;
+  padding: 8px 4px;
+  text-align: center;
+  position: relative;
+  color: #999;
+  font-size: 14px;
+}
+
+.step-indicator::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #333;
+}
+
+.step-indicator.active {
+  color: white;
+}
+
+.step-indicator.active::after {
+  background-color: #7B3FF2;
+}
+
+.checkout-step {
+  margin-bottom: 20px;
+}
+
+.step-title {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.half {
+  flex: 1;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background-color: #2a2a2a;
+  color: white;
+  font-size: 16px;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #7B3FF2;
+  box-shadow: 0 0 0 2px rgba(123, 63, 242, 0.2);
+}
+
+input.error, select.error {
+  border-color: #e74c3c;
+}
+
+.field-error {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.error-message {
+  background-color: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.primary-button {
+  background-color: #7B3FF2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  flex: 1;
+}
+
+.primary-button:hover:not(:disabled) {
+  background-color: #6a30d9;
+}
+
+.secondary-button {
+  background-color: transparent;
+  color: #ccc;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  flex: 1;
+}
+
+.secondary-button:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.payment-summary {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.payment-summary h4 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.summary-row.total {
+  border-top: 1px solid #444;
+  padding-top: 8px;
+  margin-top: 8px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.checkout-step.confirmation {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.success-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background: #4CAF50;
+  color: white;
+  border-radius: 50%;
+  font-size: 30px;
+  margin-bottom: 16px;
+}
+
+.checkout-step.confirmation h3 {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
+
+.confirmation-message {
+  margin-bottom: 24px;
+  color: #ccc;
+}
+
+.order-details, .shipping-details {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.order-details h4, .shipping-details h4 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.order-items {
+  margin-bottom: 12px;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.shipping-details p {
+  margin: 4px 0;
+  color: #ccc;
+  font-size: 14px;
+}
+
+.order-confirmation {
+  margin: 24px 0 0;
+  font-style: italic;
+  color: #ccc;
+}

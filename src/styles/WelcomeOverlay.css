@@ -1,0 +1,162 @@
+.welcome-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.welcome-overlay.fade-out {
+  opacity: 0;
+}
+
+.welcome-content {
+  background-color: rgba(30, 30, 30, 0.95);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.welcome-header h1 {
+  margin: 0;
+  font-size: 32px;
+  background: linear-gradient(to right, #7B3FF2, #9168F2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 32px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.close-button:hover {
+  color: white;
+}
+
+.welcome-slides {
+  position: relative;
+  min-height: 160px;
+  overflow: hidden;
+}
+
+.slide {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide h2 {
+  margin: 0 0 15px;
+  font-size: 24px;
+  color: white;
+}
+
+.slide p {
+  margin: 0;
+  color: #ccc;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.slide-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 30px 0 20px;
+}
+
+.slide-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #444;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.slide-indicator.active {
+  background-color: #7B3FF2;
+}
+
+.welcome-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.next-button, .start-button {
+  background-color: #7B3FF2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.next-button:hover, .start-button:hover {
+  background-color: #6a30d9;
+}
+
+.start-button {
+  background-color: #4CAF50;
+}
+
+.start-button:hover {
+  background-color: #3d8b40;
+}
+
+@media (max-width: 767px) {
+  .welcome-content {
+    padding: 20px;
+  }
+  
+  .welcome-header h1 {
+    font-size: 24px;
+  }
+  
+  .slide h2 {
+    font-size: 20px;
+  }
+  
+  .slide p {
+    font-size: 14px;
+  }
+  
+  .welcome-slides {
+    min-height: 180px;
+  }
+}

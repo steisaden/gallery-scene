@@ -1,0 +1,124 @@
+.artwork-label {
+  pointer-events: none;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 8px 16px;
+  border-radius: 4px;
+  color: white;
+  width: max-content;
+}
+
+.artwork-label h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.artwork-label p {
+  margin: 0;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.artwork-label .price {
+  margin-top: 4px;
+  font-weight: bold;
+  color: #4CAF50;
+}
+
+.artwork-info-panel {
+  background: rgba(0, 0, 0, 0.9);
+  padding: 20px;
+  border-radius: 8px;
+  color: white;
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  position: relative;
+  pointer-events: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.artwork-info-panel h2 {
+  margin: 0 0 5px;
+  font-size: 20px;
+}
+
+.artwork-info-panel .artist {
+  margin: 0 0 15px;
+  color: #ccc;
+  font-size: 16px;
+}
+
+.artwork-info-panel .description {
+  margin-bottom: 15px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.artwork-info-panel .details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.artwork-info-panel .purchase-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.artwork-info-panel .price {
+  font-size: 20px;
+  font-weight: bold;
+  color: #4CAF50;
+}
+
+.artwork-info-panel .in-cart {
+  background: #4CAF50;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.artwork-info-panel .add-to-cart {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.artwork-info-panel .add-to-cart:hover {
+  background: #3d8b40;
+}
+
+.artwork-info-panel .close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+}
+
+.artwork-info-panel .close-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

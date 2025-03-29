@@ -1,0 +1,369 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  padding: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  color: white;
+  overflow: hidden;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #333;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: white;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.close-button:hover {
+  color: white;
+}
+
+.profile-tabs {
+  display: flex;
+  border-bottom: 1px solid #333;
+}
+
+.tab-button {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 16px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-button:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.tab-button.active {
+  color: white;
+  border-bottom: 2px solid #7B3FF2;
+}
+
+.modal-content {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.success-message {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #4CAF50;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.error-message {
+  background-color: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.profile-info {
+  display: flex;
+  margin-bottom: 24px;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  background-color: #7B3FF2;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 36px;
+  color: white;
+  margin-right: 20px;
+  flex-shrink: 0;
+}
+
+.profile-details {
+  flex: 1;
+}
+
+.profile-name {
+  margin: 0 0 4px;
+  font-size: 24px;
+}
+
+.profile-email {
+  margin: 0 0 8px;
+  color: #ccc;
+}
+
+.profile-role {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: #aaa;
+}
+
+.role-badge {
+  background-color: #333;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.edit-profile-button {
+  display: inline-block;
+  margin-top: 12px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+  position: relative;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background-color: #2a2a2a;
+  color: white;
+  font-size: 16px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #7B3FF2;
+  box-shadow: 0 0 0 2px rgba(123, 63, 242, 0.2);
+}
+
+input.error {
+  border-color: #e74c3c;
+}
+
+.field-error {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.primary-button {
+  background-color: #7B3FF2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.primary-button:hover:not(:disabled) {
+  background-color: #6a30d9;
+}
+
+.secondary-button {
+  background-color: transparent;
+  color: #ccc;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.secondary-button:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.text-button {
+  background: none;
+  border: none;
+  color: #7B3FF2;
+  padding: 0;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-right: 16px;
+}
+
+.text-button:hover {
+  color: #6a30d9;
+}
+
+.logout-section {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid #333;
+  text-align: center;
+}
+
+.logout-button {
+  color: #e74c3c;
+}
+
+.logout-button:hover {
+  color: #c0392b;
+}
+
+.section-title {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+
+.purchase-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.purchase-item {
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #222;
+}
+
+.purchase-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.purchase-title h4 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.purchase-id {
+  font-size: 12px;
+  color: #999;
+}
+
+.purchase-amount {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.purchase-details {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.purchase-info p {
+  margin: 4px 0;
+  color: #bbb;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  background-color: #333;
+}
+
+.status-badge.completed {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #4CAF50;
+}
+
+.status-badge.failed {
+  background-color: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+}
+
+.status-badge.refunded {
+  background-color: rgba(241, 196, 15, 0.2);
+  color: #f1c40f;
+  margin-left: 8px;
+}
+
+.purchase-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.loading-spinner {
+  text-align: center;
+  padding: 24px;
+  color: #999;
+}
+
+.empty-purchases {
+  text-align: center;
+  padding: 32px 16px;
+  color: #999;
+}
+
+.empty-purchases p {
+  margin: 8px 0;
+}

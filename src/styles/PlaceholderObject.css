@@ -1,0 +1,77 @@
+.debug-label {
+  color: white;
+  background: rgba(0,0,0,0.7);
+  padding: 5px 10px;
+  border-radius: 5px;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.artwork-info {
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 15px;
+  border-radius: 8px;
+  width: 250px;
+  position: relative;
+}
+
+.artwork-info h3 {
+  margin: 0 0 5px;
+  font-size: 18px;
+}
+
+.artist {
+  margin: 0 0 10px;
+  color: #ccc;
+  font-style: italic;
+  font-size: 14px;
+}
+
+.description {
+  font-size: 14px;
+  margin: 0 0 15px;
+  line-height: 1.4;
+}
+
+.price-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price {
+  font-size: 18px;
+  font-weight: bold;
+  color: #4CAF50;
+}
+
+.cart-button {
+  background: #7B3FF2;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.cart-button:hover {
+  background: #6a30d9;
+}
+
+.close-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.close-button:hover {
+  color: white;
+}
