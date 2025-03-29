@@ -61,7 +61,7 @@ Thumbs.db
 *.mp3
 *.wav
 *.flac
-*.jpg
+# Removed *.jpg since we want to track these with Git LFS
 
 # Cache
 .cache/
