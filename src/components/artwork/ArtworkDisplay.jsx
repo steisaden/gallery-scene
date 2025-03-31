@@ -1,244 +1,335 @@
 // src/components/artwork/ArtworkDisplay.jsx
-import React, { useState, useRef } from 'react';
-import { Html } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useFrame } from '@react-three/fiber';
+import { useCursor, Html } from '@react-three/drei';
 import * as THREE from 'three';
-import ArtworkInfo from './ArtworkInfo';
-import PurchasePanel from './PurchasePanel';
-import useArtworkTexture from '../../hooks/useArtworkTexture';
-import { useAuth } from '../../contexts/AuthContext';
-import '../../styles/ArtworkDisplay.css';
 
-const ArtworkDisplay = ({ 
-  position, 
-  rotation, 
-  artwork, 
-  size = [3, 2], 
-  showDetails = false,
-  wallId,
+/**
+ * ArtworkDisplay component for displaying artworks in galleries
+ * Handles both 2D and 3D artwork display with interaction
+ * Uses manual texture loading to avoid crossOrigin issues
+ * 
+ * @param {Object} artwork - Artwork data object
+ * @param {Array} position - [x, y, z] position
+ * @param {Array} rotation - [x, y, z] rotation in radians
+ * @param {Array} size - [width, height] of display area
+ * @param {string} wallId - Wall identifier (for positioning)
+ * @param {boolean} is3D - Whether artwork is 3D (true) or 2D (false)
+ * @param {Function} onAddToCart - Add to cart handler
+ */
+const ArtworkDisplay = ({
+  artwork,
+  position = [0, 0, 0],
+  rotation = [0, 0, 0],
+  size = [5, 3],
+  wallId = 'wall',
+  is3D = false,
   onAddToCart
 }) => {
-  const { isAuthenticated } = useAuth();
-  const [isInfoVisible, setIsInfoVisible] = useState(showDetails);
-  const [isPurchasePanelOpen, setIsPurchasePanelOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isFrameHovered, setIsFrameHovered] = useState(false);
-  const [cursorStyle, setCursorStyle] = useState('auto'); // Add this state
+  // State management
+  const [hovered, setHovered] = useState(false);
+  const [active, setActive] = useState(false);
+  const [texture, setTexture] = useState(null);
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+  
+  // Component refs
+  const meshRef = useRef();
   const frameRef = useRef();
-  const imageRef = useRef();
+  const labelRef = useRef();
   
-  // Load artwork texture
-  const { texture, loading, error } = useArtworkTexture(artwork.imageUrl, {
-    fallback: true,
-    fallbackColor: '#333333'
-  });
+  // Change cursor on hover
+  useCursor(hovered);
   
-  // Calculate dimensions based on texture aspect ratio if available
-  const aspectRatio = texture && texture.image ? 
-    texture.image.width / texture.image.height : 1.5;
-  const width = size[0];
-  const height = width / aspectRatio;
+  // Load artwork texture manually if 2D
+  useEffect((createFallbackTexture, texture) => {
+    if (is3D) return; // Skip for 3D artworks
+    
+    const textureLoader = new THREE.TextureLoader();
+    const imageUrl = artwork?.imageUrl || '/assets/placeholder-art.jpg';
+    
+    try {
+      textureLoader.load(
+        imageUrl,
+        // Success callback
+        (loadedTexture) => {
+          loadedTexture.encoding = THREE.sRGBEncoding;
+          loadedTexture.minFilter = THREE.LinearFilter;
+          loadedTexture.magFilter = THREE.LinearFilter;
+          setTexture(loadedTexture);
+          setLoaded(true);
+          setError(false);
+        },
+        // Progress callback
+        undefined,
+        // Error callback
+        (err) => {
+          console.error('Failed to load artwork texture:', err);
+          setError(true);
+          createFallbackTexture();
+        }
+      );
+    } catch (err) {
+      console.error('Exception loading texture:', err);
+      setError(true);
+      createFallbackTexture();
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      if (texture) {
+        texture.dispose();
+      }
+    };
+  }, [artwork, is3D]);
   
-  // Add a subtle hover animation to the artwork
+  // Create fallback texture
+  const createFallbackTexture = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    
+    // Fill background
+    ctx.fillStyle = '#444444';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw error pattern
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(canvas.width, canvas.height);
+    ctx.moveTo(canvas.width, 0);
+    ctx.lineTo(0, canvas.height);
+    ctx.stroke();
+    
+    // Add error text
+    ctx.font = 'bold 32px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'white';
+    ctx.fillText('Image Error', canvas.width/2, canvas.height/2 - 20);
+    ctx.font = '24px Arial';
+    ctx.fillText(artwork?.title || 'Artwork', canvas.width/2, canvas.height/2 + 20);
+    
+    const fallbackTexture = new THREE.CanvasTexture(canvas);
+    setTexture(fallbackTexture);
+  };
+  
+  // Animation effects
   useFrame(() => {
-    if (frameRef.current) {
-      // Subtle pulsing animation when hovered
-      if (isFrameHovered) {
-        frameRef.current.scale.x = THREE.MathUtils.lerp(frameRef.current.scale.x, 1.02, 0.1);
-        frameRef.current.scale.y = THREE.MathUtils.lerp(frameRef.current.scale.y, 1.02, 0.1);
-      } else {
-        frameRef.current.scale.x = THREE.MathUtils.lerp(frameRef.current.scale.x, 1, 0.1);
-        frameRef.current.scale.y = THREE.MathUtils.lerp(frameRef.current.scale.y, 1, 0.1);
-      }
-    }
+    if (!meshRef.current) return;
     
-    if (imageRef.current) {
-      // Subtle z-position animation when hovered
-      if (isHovered) {
-        imageRef.current.position.z = THREE.MathUtils.lerp(imageRef.current.position.z, 0.03, 0.1);
-      } else {
-        imageRef.current.position.z = THREE.MathUtils.lerp(imageRef.current.position.z, 0, 0.1);
+    // Add a gentle hover animation
+    if (hovered) {
+      meshRef.current.position.z = position[2] + Math.sin(Date.now() * 0.003) * 0.05;
+      
+      // Make frame glow on hover
+      if (frameRef.current && frameRef.current.material) {
+        frameRef.current.material.emissive.setRGB(0.2, 0.2, 0.2);
+      }
+      
+      // Scale up the info label
+      if (labelRef.current) {
+        labelRef.current.scale.setScalar(
+          THREE.MathUtils.lerp(labelRef.current.scale.x, 1.1, 0.1)
+        );
+      }
+    } else {
+      // Return to normal position when not hovered
+      meshRef.current.position.z = THREE.MathUtils.lerp(
+        meshRef.current.position.z, 
+        position[2], 
+        0.1
+      );
+      
+      // Reset frame glow
+      if (frameRef.current && frameRef.current.material) {
+        frameRef.current.material.emissive.setRGB(0, 0, 0);
+      }
+      
+      // Reset label scale
+      if (labelRef.current) {
+        labelRef.current.scale.setScalar(
+          THREE.MathUtils.lerp(labelRef.current.scale.x, 1, 0.1)
+        );
       }
     }
   });
   
-  // Toggle info panel visibility
-  const toggleInfo = (e) => {
-    if (e) e.stopPropagation();
-    setIsInfoVisible(!isInfoVisible);
-    
-    // If purchase panel is open, close it when toggling info
-    if (isPurchasePanelOpen) {
-      setIsPurchasePanelOpen(false);
-    }
-  };
-  
-  // Open purchase panel
-  const openPurchasePanel = (e) => {
-    if (e) e.stopPropagation();
-    
-    if (!isAuthenticated) {
-      // If not authenticated, show login prompt instead
-      // This could be improved with a custom event that the parent component handles
-      console.log('User needs to log in to purchase');
-      return;
-    }
-    
-    setIsPurchasePanelOpen(true);
-    setIsInfoVisible(false);
-  };
-  
-  // Close purchase panel
-  const closePurchasePanel = (e) => {
-    if (e) e.stopPropagation();
-    setIsPurchasePanelOpen(false);
-  };
-  
-  // Handle clicking on the artwork frame
-  const handleArtworkClick = (e) => {
+  // Handle click event
+  const handleClick = (e) => {
     e.stopPropagation();
-    if (!isInfoVisible && !isPurchasePanelOpen) {
-      setIsInfoVisible(true);
-    }
-  };
-  
-  // Handle cursor pointers for interactivity
-  // Update the pointer handlers
-  const handlePointerOver = () => {
-    setIsHovered(true);
-    setCursorStyle('pointer');
-  };
-  
-  const handlePointerOut = () => {
-    setIsHovered(false);
-    setCursorStyle('auto');
-  };
-  
-  const handleFramePointerOver = () => {
-    setIsFrameHovered(true);
-    setCursorStyle('pointer');
-  };
-  
-  const handleFramePointerOut = () => {
-    setIsFrameHovered(false);
-    setCursorStyle('auto');
+    setActive(!active);
   };
   
   // Add to cart handler
   const handleAddToCart = (e) => {
-    if (e) e.stopPropagation();
+    e.stopPropagation();
     
-    if (onAddToCart) {
-      const success = onAddToCart(artwork);
+    if (onAddToCart && artwork) {
+      onAddToCart(artwork);
       
-      if (success) {
-        // Optionally, close panels after successful add
-        setIsPurchasePanelOpen(false);
-        setIsInfoVisible(false);
+      // Show visual feedback
+      if (frameRef.current && frameRef.current.material) {
+        frameRef.current.material.emissive.setRGB(0.4, 0.2, 0.8);
+        setTimeout(() => {
+          if (frameRef.current && frameRef.current.material) {
+            frameRef.current.material.emissive.setRGB(0, 0, 0);
+          }
+        }, 300);
       }
+      
+      // Close the info panel
+      setActive(false);
     }
   };
   
+  // Calculate the display dimensions
+  const frameWidth = size[0];
+  const frameHeight = size[1];
+  const frameDepth = 0.15;
+  const framePadding = 0.2;
+  
+  // Size for the actual artwork canvas (slightly smaller than frame)
+  const canvasWidth = frameWidth - (framePadding * 2);
+  const canvasHeight = frameHeight - (framePadding * 2);
+  
+  // Frame material properties
+  const frameMaterial = {
+    color: '#222222',
+    metalness: 0.5,
+    roughness: 0.7
+  };
+  
   return (
-    <group position={position} rotation={rotation} className={`cursor-${cursorStyle}`}>
-      {/* Frame - with slight interaction effect on hover */}
-      <mesh 
+    <group
+      position={position}
+      rotation={rotation}
+      ref={meshRef}
+    >
+      {/* Artwork Frame */}
+      <mesh
         ref={frameRef}
-        position={[0, 0, -0.05]} 
+        position={[0, 0, -frameDepth / 2]}
         castShadow
-        onClick={handleArtworkClick}
-        onPointerOver={handleFramePointerOver}
-        onPointerOut={handleFramePointerOut}
+        receiveShadow
       >
-        <boxGeometry args={[width + 0.2, height + 0.2, 0.1]} />
-        <meshStandardMaterial 
-          color={isFrameHovered ? "#555555" : "black"}
-          metalness={0.5}
-          roughness={0.7}
+        <boxGeometry args={[frameWidth, frameHeight, frameDepth]} />
+        <meshStandardMaterial
+          color={frameMaterial.color}
+          metalness={frameMaterial.metalness}
+          roughness={frameMaterial.roughness}
         />
       </mesh>
       
-      {/* Artwork Image */}
-      <mesh 
-        ref={imageRef}
-        onClick={handleArtworkClick}
-        onPointerOver={handlePointerOver}
-        onPointerOut={handlePointerOut}
-      >
-        <planeGeometry args={[width, height]} />
-        {loading ? (
-          <meshStandardMaterial color="#333333" />
-        ) : error ? (
-          <meshStandardMaterial color="#aa3333" />
-        ) : (
-          <meshStandardMaterial 
-            map={texture} 
-            toneMapped={true}
-            transparent={false}
-          />
-        )}
-      </mesh>
-      
-      {/* Info Button */}
-      <Html position={[width/2 - 0.3, height/2 - 0.3, 0.1]}>
-        <button 
-          onClick={toggleInfo}
-          className={`artwork-button info-button ${isInfoVisible ? 'active' : ''}`}
+      {/* Artwork Display */}
+      {is3D ? (
+        // For 3D artworks (using a simple placeholder)
+        <mesh
+          position={[0, 0, 0.1]}
+          rotation={[0, 0, 0]}
+          castShadow
+          receiveShadow
+          onPointerOver={() => setHovered(true)}
+          onPointerOut={() => setHovered(false)}
+          onClick={handleClick}
         >
-          i
-        </button>
-      </Html>
+          <boxGeometry args={[canvasWidth * 0.8, canvasHeight * 0.8, 0.2]} />
+          <meshStandardMaterial
+            color={artwork?.color || '#7B3FF2'}
+            wireframe={hovered}
+          />
+        </mesh>
+      ) : (
+        // For 2D artworks (using image texture)
+        <mesh
+          position={[0, 0, -frameDepth / 2 + 0.01]}
+          onPointerOver={() => setHovered(true)}
+          onPointerOut={() => setHovered(false)}
+          onClick={handleClick}
+        >
+          <planeGeometry args={[canvasWidth, canvasHeight]} />
+          <meshStandardMaterial
+            map={texture}
+            toneMapped={false}
+          />
+        </mesh>
+      )}
       
-      {/* Purchase Button - only show if for sale */}
-      {artwork.forSale && (
-        <Html position={[width/2 - 0.7, height/2 - 0.3, 0.1]}>
-          <button 
-            onClick={isAuthenticated ? openPurchasePanel : handleArtworkClick}
-            className="artwork-button price-button"
+      {/* Title label that appears when hovered */}
+      {hovered && !active && artwork && (
+        <group ref={labelRef}>
+          <Html
+            position={[0, -frameHeight / 2 - 0.4, 0]}
+            center
+            distanceFactor={15}
           >
-            ${artwork.price}
-          </button>
+            <div className="artwork-label">
+              <div className="artwork-title">{artwork.title}</div>
+              {artwork.artist && (
+                <div className="artwork-artist">{artwork.artist}</div>
+              )}
+              {artwork.forSale && (
+                <div className="artwork-price">${artwork.price}</div>
+              )}
+            </div>
+          </Html>
+        </group>
+      )}
+      
+      {/* Detailed info panel that appears when clicked */}
+      {active && artwork && (
+        <Html
+          position={[0, 0, 0.5]}
+          center
+          distanceFactor={10}
+          occlude
+        >
+          <div className="artwork-info-panel">
+            <h2 className="artwork-title">{artwork.title}</h2>
+            {artwork.artist && <p className="artwork-artist">{artwork.artist}</p>}
+            
+            {artwork.description && (
+              <p className="artwork-description">{artwork.description}</p>
+            )}
+            
+            <div className="artwork-details">
+              {artwork.year && <span className="artwork-year">{artwork.year}</span>}
+              {artwork.medium && <span className="artwork-medium">{artwork.medium}</span>}
+              {artwork.dimensions && <span className="artwork-dimensions">{artwork.dimensions}</span>}
+            </div>
+            
+            {artwork.forSale && (
+              <div className="artwork-purchase">
+                <div className="artwork-price">${artwork.price}</div>
+                <button 
+                  className="add-to-cart-button"
+                  onClick={handleAddToCart}
+                >
+                  Add to Cart
+                </button>
+              </div>
+            )}
+            
+            <button 
+              className="close-panel-button"
+              onClick={() => setActive(false)}
+            >
+              ×
+            </button>
+          </div>
         </Html>
       )}
       
-      {/* Information Panel */}
-      {isInfoVisible && (
-        <Html 
-          position={[0, 0, 0.2]} 
-          className="artwork-info-container"
-          style={{ width: `${width * 300}px` }}
-          transform
-          occlude
+      {/* Loading indicator */}
+      {!loaded && !error && !is3D && (
+        <Html
+          position={[0, 0, 0.1]}
+          center
         >
-          <ArtworkInfo 
-            artwork={artwork} 
-            onClose={toggleInfo}
-            onPurchase={artwork.forSale ? (isAuthenticated ? openPurchasePanel : null) : null}
-            onAddToCart={isAuthenticated && artwork.forSale ? handleAddToCart : null}
-            isInCart={false} // This should be passed from parent
-          />
-        </Html>
-      )}
-      
-      {/* Purchase Panel */}
-      {isPurchasePanelOpen && (
-        <Html 
-          position={[0, 0, 0.2]} 
-          className="artwork-purchase-container"
-          style={{ width: `${width * 350}px` }}
-          transform
-          occlude
-        >
-          <PurchasePanel 
-            artwork={artwork} 
-            onClose={closePurchasePanel}
-            onComplete={(result) => {
-              closePurchasePanel();
-              // Handle purchase completion (e.g., show confirmation)
-              console.log('Purchase completed:', result);
-            }}
-          />
+          <div className="loading-spinner"></div>
         </Html>
       )}
     </group>
@@ -246,23 +337,24 @@ const ArtworkDisplay = ({
 };
 
 ArtworkDisplay.propTypes = {
-  position: PropTypes.array.isRequired,
-  rotation: PropTypes.array.isRequired,
   artwork: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    title: PropTypes.string,
     artist: PropTypes.string,
     description: PropTypes.string,
-    year: PropTypes.string,
+    year: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     medium: PropTypes.string,
     dimensions: PropTypes.string,
+    imageUrl: PropTypes.string,
     price: PropTypes.number,
     forSale: PropTypes.bool,
-    imageUrl: PropTypes.string
-  }).isRequired,
+    color: PropTypes.string
+  }),
+  position: PropTypes.array,
+  rotation: PropTypes.array,
   size: PropTypes.array,
-  showDetails: PropTypes.bool,
   wallId: PropTypes.string,
+  is3D: PropTypes.bool,
   onAddToCart: PropTypes.func
 };
 

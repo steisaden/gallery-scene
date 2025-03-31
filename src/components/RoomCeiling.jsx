@@ -1,40 +1,22 @@
-// src/components/RoomCeiling.jsx
-import React, { useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import * as THREE from 'three';
+import { GradientTexture } from '@react-three/drei';
 
-/**
- * RoomCeiling component for creating ceilings in gallery rooms
- * 
- * @param {Array} position - [x, z] position of ceiling center
- * @param {Array} size - [width, length] of ceiling
- * @param {number} height - Height position of ceiling (y-coordinate)
- * @param {string} color - Ceiling color
- * @param {number} opacity - Ceiling opacity
- */
-const RoomCeiling = ({ 
-  position = [0, 0], 
-  size = [10, 10], 
-  height = 20, 
-  color = "#f5f5f5",
-  opacity = 0.3
-}) => {
-  const ceilingRef = useRef();
-
+const RoomCeiling = ({ position = [0, 0], size = [10, 10], height = 10 }) => {
   return (
     <mesh 
-      ref={ceilingRef}
       position={[position[0], height, position[1]]} 
       rotation={[Math.PI / 2, 0, 0]} 
       receiveShadow
     >
-      <planeGeometry args={[size[0], size[1]]} />
-      <meshStandardMaterial 
-        color={color} 
-        transparent={true} 
-        opacity={opacity}
-        side={THREE.DoubleSide}
-      />
+      <planeGeometry args={size} />
+      <meshStandardMaterial>
+        <GradientTexture 
+          stops={[0, 1]} 
+          colors={['#333333', '#111111']} 
+          size={1024} 
+        />
+      </meshStandardMaterial>
     </mesh>
   );
 };
@@ -42,9 +24,7 @@ const RoomCeiling = ({
 RoomCeiling.propTypes = {
   position: PropTypes.array,
   size: PropTypes.array,
-  height: PropTypes.number,
-  color: PropTypes.string,
-  opacity: PropTypes.number
+  height: PropTypes.number
 };
 
 export default RoomCeiling;

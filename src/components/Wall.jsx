@@ -1,106 +1,92 @@
 // src/components/Wall.jsx
 import React from 'react';
 import PropTypes from 'prop-types';
+import { GradientTexture } from '@react-three/drei';
+import * as THREE from 'three';
 
-/**
- * Wall component for creating gallery walls with optional doorways
- * 
- * @param {Array} start - Start position [x, y, z]
- * @param {Array} end - End position [x, y, z]
- * @param {number} height - Wall height
- * @param {number} thickness - Wall thickness
- * @param {string} color - Wall color
- * @param {boolean} hasDoor - Whether the wall has a door
- * @param {number} doorPosition - Position of door (0-1 along wall length)
- * @param {number} doorWidth - Width of doorway
- * @param {number} doorHeight - Height of doorway
- */
 const Wall = ({ 
   start, 
   end, 
-  height, 
-  thickness = 0.5,
-  color = "white",
-  hasDoor = false, 
-  doorPosition = 0.5, // 0 to 1, position along the wall
-  doorWidth = 7,
-  doorHeight = 12
+  height = 10, 
+  thickness = 0.5, 
+  color = 'white',
+  hasDoor = false,
+  position = 0.5,
+  width = 5,
+  doorHeight = 8
 }) => {
-  // Calculate wall properties
-  const length = Math.sqrt(
-    Math.pow(end[0] - start[0], 2) + 
-    Math.pow(end[2] - start[2], 2)
-  );
+  // Calculate wall dimensions and position
+  const wallLength = new THREE.Vector2(
+    end[0] - start[0],
+    end[2] - start[2]
+  ).length();
   
-  const center = [
+  const wallCenter = [
     (start[0] + end[0]) / 2,
     height / 2,
     (start[2] + end[2]) / 2
   ];
   
+  // Calculate rotation
   const angle = Math.atan2(end[2] - start[2], end[0] - start[0]);
   
-  // If it has a door, we need to create multiple sections
+  // Create door cutout if needed
+  let wallGeometry;
+  
   if (hasDoor) {
     // Calculate door position along the wall
-    const doorCenter = length * doorPosition;
-    const doorStart = doorCenter - doorWidth / 2;
-    const doorEnd = doorCenter + doorWidth / 2;
-
-    // Create wall sections
-    return (
-      <group position={[0, 0, 0]} rotation={[0, angle, 0]}>
-        {/* Section before door (if any) */}
-        {doorStart > 0 && (
-          <mesh position={[doorStart / 2 - length / 2, height / 2, 0]} castShadow receiveShadow>
-            <boxGeometry args={[doorStart, height, thickness]} />
-            <meshStandardMaterial color={color} />
-          </mesh>
-        )}
-        
-        {/* Section above door */}
-        <mesh 
-          position={[doorCenter - length / 2, height - (height - doorHeight) / 2, 0]} 
-          castShadow 
-          receiveShadow
-        >
-          <boxGeometry args={[doorWidth, height - doorHeight, thickness]} />
+    const doorPosition = wallLength * position - width / 2;
+    
+    // Create wall with door cutout
+    wallGeometry = (
+      <mesh position={wallCenter} rotation={[0, angle, 0]}>
+        {/* Left section */}
+        <mesh position={[-wallLength/2 + doorPosition/2, 0, 0]}>
+          <boxGeometry args={[doorPosition, height, thickness]} />
           <meshStandardMaterial color={color} />
         </mesh>
         
-        {/* Section after door (if any) */}
-        {doorEnd < length && (
-          <mesh 
-            position={[length / 2 - (length - doorEnd) / 2, height / 2, 0]} 
-            castShadow 
-            receiveShadow
-          >
-            <boxGeometry args={[length - doorEnd, height, thickness]} />
-            <meshStandardMaterial color={color} />
-          </mesh>
-        )}
-      </group>
+        {/* Right section */}
+        <mesh position={[doorPosition/2 + width + (wallLength - doorPosition - width)/2, 0, 0]}>
+          <boxGeometry args={[wallLength - doorPosition - width, height, thickness]} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+        
+        {/* Top section */}
+        <mesh position={[doorPosition/2 + width/2, (height - doorHeight)/2 + doorHeight/2, 0]}>
+          <boxGeometry args={[width, height - doorHeight, thickness]} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+      </mesh>
+    );
+  } else {
+    // Create solid wall
+    wallGeometry = (
+      <mesh position={wallCenter} rotation={[0, angle, 0]}>
+        <boxGeometry args={[wallLength, height, thickness]} />
+        <meshStandardMaterial color={color}>
+          <GradientTexture 
+            stops={[0, 1]} 
+            colors={[color, '#e0e0e0']} 
+            size={1024} 
+          />
+        </meshStandardMaterial>
+      </mesh>
     );
   }
   
-  // Regular wall without door
-  return (
-    <mesh position={center} rotation={[0, angle, 0]} castShadow receiveShadow>
-      <boxGeometry args={[length, height, thickness]} />
-      <meshStandardMaterial color={color} />
-    </mesh>
-  );
+  return wallGeometry;
 };
 
 Wall.propTypes = {
   start: PropTypes.array.isRequired,
   end: PropTypes.array.isRequired,
-  height: PropTypes.number.isRequired,
+  height: PropTypes.number,
   thickness: PropTypes.number,
   color: PropTypes.string,
   hasDoor: PropTypes.bool,
-  doorPosition: PropTypes.number,
-  doorWidth: PropTypes.number,
+  position: PropTypes.number,
+  width: PropTypes.number,
   doorHeight: PropTypes.number
 };
 

@@ -7,7 +7,7 @@ const useEnvironment = (path = '/assets/videos/kobe.mp4', options = {}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  useEffect((envMap) => {
     const loader = new RGBELoader();
     
     setLoading(true);
